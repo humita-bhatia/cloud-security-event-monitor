@@ -1,0 +1,26 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Build Docker images
+        run: docker compose build
+
+      - name: Start Redis
+        run: docker compose up -d redis
+
+      - name: Run automated tests
+        run: docker compose run --rm api pytest
+
+      - name: Stop services
+        if: always()
+        run: docker compose down
